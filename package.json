@@ -1,0 +1,32 @@
+{
+    "name": "pairup",
+    "version": "1.0.0",
+    "description": "A simple way to meet new people and spark real connections.",
+    "main": "index.js",
+    "scripts": {
+        "start":"node src/app.js",
+        "dev":"nodemon src/app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mohdjalalmk/pair-up.git"
+    },
+    "keywords": [
+        "javascript",
+        "typescript",
+        "tinder",
+        "dating",
+        "app",
+        "pairup"
+    ],
+    "author": "Mohammed Jalal",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/mohdjalalmk/pair-up/issues"
+    },
+    "homepage": "https://github.com/mohdjalalmk/pair-up#readme",
+    "dependencies": {
+        "express": "^5.1.0"
+    }
+}
