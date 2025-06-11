@@ -1,17 +1,13 @@
 const express = require('express')
+const { adminAuth, userAuth } = require('./middlewares/auth')
 
 const app = express()
 
-app.use("/test",(req,res)=>{
-    res.send("hello from server")
-})
+app.use("/admin",adminAuth)
 
-app.use("/hello",(req,res)=>{
-    res.send("hello from server /hello")
-})
-
-app.use("/node",(req,res)=>{
-    res.send("hello from server nodemon")
+app.get("/user",userAuth,(req,res)=>{
+    let userid=req.query.userid
+    res.send(`user id is ${userid}`)
 })
 
 app.listen(3000,()=>{
