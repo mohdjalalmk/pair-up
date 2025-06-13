@@ -1,24 +1,59 @@
 const mongoose = require("mongoose");
+const validator = require("validator")
 
-const userSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
+const userSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+    },
+    age: {
+      type: Number,
+      min: [18, "Age must be at least 18"],
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      // match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
+      validate: [validator.isEmail, 'Please enter a valid email']
+    },
+    password: {
+      type: String,
+      required: true,
+      validate: [validator.isStrongPassword, 'Not a strong password']
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "others"],
+        message: "Gender must be male, female, or others",
+      },
+    },
+    photoUrl: {
+      type: String,
+      validate: [validator.isURL, 'Invalid photo url']
+    },
+    description: {
+      type: String,
+      default: "Whatsapp devs!",
+    },
+    skills: {
+      type: [String],
+      validate: {
+        validator: function (value) {
+          return value.length <= 10;
+        },
+        message: 'You can add a maximum of 10 skills only',
+      }
+    },
   },
-  lastName: {
-    type: String,
-  },
-  age: {
-    type: String,
-  },
-  email: {
-    type: String,
-  },
-  password: {
-    type: String,
-  },
-  gender: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("User", userSchema);
