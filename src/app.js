@@ -11,7 +11,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User added succesfully");
   } catch (error) {
-    res.status(400).send("Error saving user" + error.message);
+    res.status(400).send("Error saving user " + error.message);
   }
 });
 
@@ -56,11 +56,24 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
   const data = req.body;
+
   try {
-    await User.findOneAndUpdate({ _id: userId }, data);
+    //  check validation
+    const NOT_ALLOWED_FIELEDS = ["email"];
+    const keys = Object.keys(data);
+    const isUpdatedRestricted = keys.some((k) =>
+      NOT_ALLOWED_FIELEDS.includes(k)
+    );
+    if (isUpdatedRestricted) {
+      return res
+        .status(400)
+        .send("Update not allowed for restricted fields like email");
+    }
+    // updating
+    await User.findOneAndUpdate({ _id: userId }, data, { runValidators: true });
     res.send("User details successfully updated");
   } catch (error) {
     res.status(400).send("Something went wrong" + error.message);
