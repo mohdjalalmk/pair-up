@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 const app = express();
 app.use(express.json());
@@ -63,7 +64,7 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
       // Create a token
-      const token = jwt.sign({ _id: user._id }, "$pair-$up-$token-$dev"); // secret for creating token
+      const token = jwt.sign({ _id: user._id }, "$pair-$up-$token-$dev",{expiresIn:'1d'}); // secret for creating token
 
       // Add the token to cookie
 
@@ -78,88 +79,49 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const { token } = req.cookies;
-    if (!token) {
-      res.status(400).send("Invalid token");
-    }
-    const decoded = await jwt.verify(token, "$pair-$up-$token-$dev");
-    const { _id } = decoded;
-    const user = await User.findById(_id);
-    if (!user) {
-      res.status(400).send("No user found");
-    }
-    res.send(user);
+    res.send(req.user);
   } catch (error) {
     res.status(400).send("Error fetching user:" + error.message);
   }
 });
 
-// GET an user from db
-
-app.get("/user", async (req, res) => {
-  const email = req.body.email;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      res.status(404).send("User not found");
-    }
-    res.send(user);
-  } catch (error) {
-    res.status(400).send("Something went wrong" + error.message);
-  }
-});
-
-// GET All user
-
-app.get("/feed", async (req, res) => {
-  try {
-    const user = await User.find({});
-    if (!user.length) {
-      res.status(404).send("No users");
-    }
-    res.send(user);
-  } catch (error) {
-    res.status(400).send("Something went wrong" + error.message);
-  }
-});
-
 // Delete user
 
-app.delete("/user", async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    await User.findOneAndDelete({ _id: userId });
-    res.send("User deleted successfully ");
-  } catch (error) {
-    res.status(400).send("Something went wrong" + error.message);
-  }
-});
+// app.delete("/user", async (req, res) => {
+//   const userId = req.body.userId;
+//   try {
+//     await User.findOneAndDelete({ _id: userId });
+//     res.send("User deleted successfully ");
+//   } catch (error) {
+//     res.status(400).send("Something went wrong" + error.message);
+//   }
+// });
 
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params.userId;
-  const data = req.body;
+// app.patch("/user/:userId", async (req, res) => {
+//   const userId = req.params.userId;
+//   const data = req.body;
 
-  try {
-    //  check validation
-    const NOT_ALLOWED_FIELEDS = ["email"];
-    const keys = Object.keys(data);
-    const isUpdatedRestricted = keys.some((k) =>
-      NOT_ALLOWED_FIELEDS.includes(k)
-    );
-    if (isUpdatedRestricted) {
-      return res
-        .status(400)
-        .send("Update not allowed for restricted fields like email");
-    }
-    // updating
-    await User.findOneAndUpdate({ _id: userId }, data, { runValidators: true });
-    res.send("User details successfully updated");
-  } catch (error) {
-    res.status(400).send("Something went wrong" + error.message);
-  }
-});
+//   try {
+//     //  check validation
+//     const NOT_ALLOWED_FIELEDS = ["email"];
+//     const keys = Object.keys(data);
+//     const isUpdatedRestricted = keys.some((k) =>
+//       NOT_ALLOWED_FIELEDS.includes(k)
+//     );
+//     if (isUpdatedRestricted) {
+//       return res
+//         .status(400)
+//         .send("Update not allowed for restricted fields like email");
+//     }
+//     // updating
+//     await User.findOneAndUpdate({ _id: userId }, data, { runValidators: true });
+//     res.send("User details successfully updated");
+//   } catch (error) {
+//     res.status(400).send("Something went wrong" + error.message);
+//   }
+// });
 
 connectDB()
   .then(() => {
