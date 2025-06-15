@@ -67,4 +67,15 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.post("/logout", async (req, res) => {
+    try {
+      // Clear the cookie named 'token'
+      res.clearCookie("token");
+      res.send("Logged out successfully");
+    } catch (error) {
+      res.status(500).send("Something went wrong during logout");
+    }
+  });
+  
+
 module.exports = { router };
