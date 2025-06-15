@@ -1,84 +1,17 @@
 const express = require("express");
 const connectDB = require("./config/database");
-const User = require("./models/user");
-const { validateSignUpData } = require("./helpers/validation");
-const bcrypt = require("bcrypt");
-const validator = require("validator");
 const cookieParser = require("cookie-parser");
-const { userAuth } = require("./middlewares/auth");
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+const { router: authRouter } = require("./routes/auth");
+const { router: profileRouter } = require("./routes/profile");
+const { router: requestRouter } = require("./routes/request");
 
-app.post("/signup", async (req, res) => {
-  try {
-    validateSignUpData(req);
-
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      skills,
-      age,
-      gender,
-      description,
-      photoUrl,
-    } = req.body;
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      password: passwordHash,
-      age,
-      gender,
-      skills,
-      photoUrl,
-      description,
-    });
-
-    await user.save();
-    res.send("User added succesfully");
-  } catch (error) {
-    res.status(400).send("Error saving user: " + error.message);
-  }
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!validator.isEmail(email)) {
-      throw new Error("Invalid credentials!");
-    }
-    const user = await User.findOne({ email });
-    if (!user) {
-      throw new Error("Invalid credentials!");
-    }
-    const isPasswordValid = await user.isValidPassword(password);
-    if (isPasswordValid) {
-      const token = await user.getJWT();
-
-      res.cookie("token", token);
-      res.send("Login successfull");
-    } else {
-      res.status(400).send("Invalid credentials!");
-    }
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-});
-
-app.get("/profile", userAuth, async (req, res) => {
-  try {
-    res.send(req.user);
-  } catch (error) {
-    res.status(400).send("Error fetching user:" + error.message);
-  }
-});
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 
 // Delete user
 
