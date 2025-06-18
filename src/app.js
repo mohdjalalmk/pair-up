@@ -8,10 +8,12 @@ app.use(cookieParser());
 const { router: authRouter } = require("./routes/auth");
 const { router: profileRouter } = require("./routes/profile");
 const { router: requestRouter } = require("./routes/request");
+const { router: userRouter } = require("./routes/user");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/", userRouter);
 
 // Delete user
 
