@@ -1,22 +1,32 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const BlacklistedToken = require("../models/blacklistedToken");
 
 const userAuth = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
-    if (!token) {
-      return res.status(400).send("Invalid token");
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).send("No token provided");
     }
-    const decodedObj = await jwt.verify(token, "$pair-$up-$token-$dev");
-    const { _id } = decodedObj;
-    const user = await User.findById(_id);
+
+    const token = authHeader.split(" ")[1];
+    const isBlacklisted = await BlacklistedToken.findOne({ token });
+    if (isBlacklisted) {
+      return res.status(401).json({ error: "Token is blacklisted" });
+    }
+    const decoded = jwt.verify(token, "$pair-$up-$token-$dev");
+
+    const user = await User.findById(decoded._id);
     if (!user) {
-      throw new Error("User found");
+      return res.status(404).send("User not found");
     }
+
     req.user = user;
     next();
   } catch (error) {
-    res.status(400).send("Error: ", error.message);
+    console.log("Auth error:", error.message);
+    res.status(401).send("Invalid or expired token");
   }
 };
 

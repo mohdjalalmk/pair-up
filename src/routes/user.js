@@ -68,7 +68,7 @@ router.get("/user/feed", userAuth, async (req, res) => {
     const user = req.user;
     const page = req.query.page || 1;
     // set restriction on limit
-    const limit = req.query.limit > 25 ? 25 : (req.query.limit || 10)
+    const limit = req.query.limit > 25 ? 25 : req.query.limit || 10;
     const skip = (page - 1) * limit;
 
     const connectionRequest = await ConnectionRequest.find({
