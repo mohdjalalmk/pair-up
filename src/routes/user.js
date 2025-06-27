@@ -2,6 +2,8 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const BlacklistedToken = require("../models/blacklistedToken");
 
 const USER_DETAILS = [
   "firstName",
@@ -89,6 +91,22 @@ router.get("/user/feed", userAuth, async (req, res) => {
     res.json({ message: "Feed data successfully fetched", data: feedUsers });
   } catch (error) {
     res.status(400).json({ error: "Error: " + error.message });
+  }
+});
+
+router.delete("/user/delete", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+    const decoded = jwt.verify(token, "$pair-$up-$token-$dev");
+    const expiryDate = new Date(decoded.exp * 1000);
+
+    await BlacklistedToken.create({ token, expiresAt: expiryDate });
+    await User.findByIdAndDelete(user._id);
+    res.json({ message: "User account deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "Error: " + error.message });
   }
 });
 

@@ -14,7 +14,7 @@ router.get("/profile/view", userAuth, async (req, res) => {
 });
 
 router.patch("/profile/edit", userAuth, async (req, res) => {
-  try {
+  try {    
     validateEditProfileData(req);
     await User.findOneAndUpdate({ _id: req.user._id }, req.body, {
       runValidators: true,
