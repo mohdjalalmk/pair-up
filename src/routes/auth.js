@@ -3,8 +3,9 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { validateSignUpData } = require("../helpers/validation");
 const validator = require("validator");
-const BlacklistedToken = require("../models/blacklistedToken")
+const BlacklistedToken = require("../models/blacklistedToken");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -88,15 +89,14 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", async (req, res) => {
+router.post("/logout", userAuth, async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(" ")[1];
 
-    if (!token) return res.status(400).json({ error: "Token missing" });
 
-    const decoded = jwt.verify(token,"$pair-$up-$token-$dev");
-    const expiryDate = new Date(decoded.exp * 1000); // JWT exp is in seconds
+    const decoded = jwt.verify(token, "$pair-$up-$token-$dev");
+    const expiryDate = new Date(decoded.exp * 1000); 
 
     await BlacklistedToken.create({ token, expiresAt: expiryDate });
 
