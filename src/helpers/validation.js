@@ -19,7 +19,7 @@ const validateEditProfileData = (req) => {
     "skills",
     "firstName",
     "lastName",
-    "photoUrl",
+    "photo"
   ];
 
   const isEditAllowed = Object.keys(req.body).every((key) =>
@@ -28,15 +28,9 @@ const validateEditProfileData = (req) => {
   if (!isEditAllowed) {
     throw new Error("Edit restricted for some fields");
   }
-  const { firstName, photoUrl } = req.body;
+  const { firstName } = req.body;
   if (firstName && firstName.length < 3) {
-    console.log("jete");
-
     throw new Error("Invalid First Name");
-  } else if (photoUrl && !validator.isURL(photoUrl)) {
-    console.log("heer");
-
-    throw new Error("Invalid photo URL");
   }
 };
 
