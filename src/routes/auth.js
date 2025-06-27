@@ -40,7 +40,17 @@ router.post("/signup", async (req, res) => {
     });
 
     await user.save();
-    res.send("User added succesfully");
+
+    const token = await user.getJWT();
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    res.status(201).json({
+      message: "Signup successful",
+      token,
+      user: userObj,
+    });
   } catch (error) {
     res.status(400).send("Error saving user: " + error.message);
   }
@@ -77,7 +87,7 @@ router.post("/login", async (req, res) => {
 
       res.status(200).json({
         message: "Login successful",
-        token, // Send JWT token in response body
+        token, 
         user: userObj,
       });
     } else {
@@ -94,9 +104,8 @@ router.post("/logout", userAuth, async (req, res) => {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(" ")[1];
 
-
     const decoded = jwt.verify(token, "$pair-$up-$token-$dev");
-    const expiryDate = new Date(decoded.exp * 1000); 
+    const expiryDate = new Date(decoded.exp * 1000);
 
     await BlacklistedToken.create({ token, expiresAt: expiryDate });
 
