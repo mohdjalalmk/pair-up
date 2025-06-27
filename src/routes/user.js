@@ -4,6 +4,8 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const BlacklistedToken = require("../models/blacklistedToken");
+const { s3, DeleteObjectCommand } = require("../utils/s3Client");
+const BUCKET_NAME = "pairup-userprofile";
 
 const USER_DETAILS = [
   "firstName",
@@ -101,8 +103,21 @@ router.delete("/user/delete", userAuth, async (req, res) => {
     const token = authHeader?.split(" ")[1];
     const decoded = jwt.verify(token, "$pair-$up-$token-$dev");
     const expiryDate = new Date(decoded.exp * 1000);
-
+    //Blacklist token
     await BlacklistedToken.create({ token, expiresAt: expiryDate });
+    //Delete photo
+    if (user?.photoUrl) {
+      const existingKey = user?.photoUrl.split(".amazonaws.com/")[1];
+      if (existingKey) {
+        const deleteCommand = new DeleteObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: existingKey,
+        });
+
+        await s3.send(deleteCommand);
+      }
+    }
+    //Delete user
     await User.findByIdAndDelete(user._id);
     res.json({ message: "User account deleted successfully" });
   } catch (error) {
