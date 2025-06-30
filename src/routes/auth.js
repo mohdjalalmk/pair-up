@@ -6,6 +6,7 @@ const validator = require("validator");
 const BlacklistedToken = require("../models/blacklistedToken");
 const jwt = require("jsonwebtoken");
 const { userAuth } = require("../middlewares/auth");
+const { sendEmail } = require("../utils/sendEmail");
 
 const router = express.Router();
 
@@ -45,7 +46,13 @@ router.post("/signup", async (req, res) => {
 
     const userObj = user.toObject();
     delete userObj.password;
-
+    await sendEmail(
+      email,
+      "Welcome to Pair UP",
+      `Hi ${
+        firstName + " " + lastName
+      },\n\nThanks for joining Pair UP! We're thrilled to have you.\nStart exploring and connecting now.\n\nCheers,\nTeam Pair UP`
+    );
     res.status(201).json({
       message: "Signup successful",
       token,
@@ -87,7 +94,7 @@ router.post("/login", async (req, res) => {
 
       res.status(200).json({
         message: "Login successful",
-        token, 
+        token,
         user: userObj,
       });
     } else {
