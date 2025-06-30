@@ -111,7 +111,7 @@ router.post("/logout", userAuth, async (req, res) => {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(" ")[1];
 
-    const decoded = jwt.verify(token, "$pair-$up-$token-$dev");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const expiryDate = new Date(decoded.exp * 1000);
 
     await BlacklistedToken.create({ token, expiresAt: expiryDate });

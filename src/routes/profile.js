@@ -12,7 +12,7 @@ const {
 
 const router = express.Router();
 
-const BUCKET_NAME = "pairup-userprofile";
+const BUCKET_NAME = process.env.S3_PROFILE_BUCKET;
 
 router.get("/profile/view", userAuth, async (req, res) => {
   try {
