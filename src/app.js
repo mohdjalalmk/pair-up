@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 require("dotenv").config();
+require("../src/utils/cronjobs")
 
 const { router: authRouter } = require("./routes/auth");
 const { router: profileRouter } = require("./routes/profile");
