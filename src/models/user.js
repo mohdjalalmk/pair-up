@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      // match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
       validate: [validator.isEmail, "Please enter a valid email"],
     },
     password: {
@@ -54,6 +53,11 @@ const userSchema = new mongoose.Schema(
         message: "You can add a maximum of 10 skills only",
       },
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    premiumExpiry: { type: Date },
   },
   { timestamps: true }
 );
