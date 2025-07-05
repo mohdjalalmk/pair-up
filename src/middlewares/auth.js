@@ -22,6 +22,8 @@ const userAuth = async (req, res, next) => {
       return res.status(404).send("User not found");
     }
 
+    delete user.password;
+
     req.user = user;
     next();
   } catch (error) {

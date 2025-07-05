@@ -53,10 +53,16 @@ router.post("/signup", async (req, res) => {
         firstName + " " + lastName
       },\n\nThanks for joining Pair UP! We're thrilled to have you.\nStart exploring and connecting now.\n\nCheers,\nTeam Pair UP`
     );
-    res.status(201).json({
-      message: "Signup successful",
+    const isPremium =
+      user.premiumExpiry && new Date(user.premiumExpiry) > new Date();
+
+    res.status(200).json({
+      message: "Login successful",
       token,
-      user: userObj,
+      user: {
+        ...userObj,
+        isPremium, 
+      },
     });
   } catch (error) {
     res.status(400).send("Error saving user: " + error.message);

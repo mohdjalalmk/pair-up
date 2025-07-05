@@ -16,26 +16,21 @@ const BUCKET_NAME = process.env.S3_PROFILE_BUCKET;
 
 router.get("/profile/view", userAuth, async (req, res) => {
   try {
-    res.send(req.user);
+    const user = req.user.toObject();
+    user.isPremium =
+      user.premiumExpiry && new Date(user.premiumExpiry) > new Date();
+
+    res.status(200).json(user);
   } catch (error) {
-    res.status(400).send("Error fetching user:" + error.message);
+    res.status(400).send("Error fetching user: " + error.message);
   }
 });
-
-// router.patch(
-//   "/:id",
-//   userAuth,
-//   checkAdmin,
-//   uploadImage.single("thumbnail"),
-//   updateCourse
-// );
 
 router.patch(
   "/profile/edit",
   userAuth,
   uploadImage.single("photo"),
   async (req, res) => {
-    
     const file = req.file;
     const user = req.user;
     try {
@@ -46,7 +41,6 @@ router.patch(
         if (user?.photoUrl) {
           const existingKey = user?.photoUrl.split(".amazonaws.com/")[1];
           if (existingKey) {
-
             const deleteCommand = new DeleteObjectCommand({
               Bucket: BUCKET_NAME,
               Key: existingKey,
@@ -77,7 +71,7 @@ router.patch(
       res.json({ message: "Details updated successfully", data: updates });
     } catch (error) {
       console.log(error);
-      
+
       res.status(400).send("Invalid edit request: " + error.message);
     }
   }
