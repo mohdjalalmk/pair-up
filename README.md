@@ -20,7 +20,7 @@ Built with:
 
 ---
 
-### 📦 Install dependencies
+## 📦 Install dependencies
 
 ```bash
 npm install
