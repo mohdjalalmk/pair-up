@@ -1,13 +1,11 @@
-# 🖥️ PairUP — Node.js Backend
+# 🛠 Pair Up Backend
 
 This is the **backend API** for PairUp — a modern Tinder‑like dating app.
-
 Built with:
 - **Node.js + Express**
 - **MongoDB**
 - **Socket.io** for realtime chat
 - **Razorpay** for premium payments
-
 ---
 
 ## ✨ Features
@@ -18,27 +16,49 @@ Built with:
 ✅ Realtime messaging with Socket.io  
 ✅ Premium subscription via Razorpay
 
----
+## 📦 Setup Instructions
 
-## 📦 Install dependencies
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/mohdjalalmk/pair-up.git
+cd pair-up
+```
+
+### 2️⃣ Install dependencies
 
 ```bash
 npm install
+```
 
----
-## 🧪 Development
+### 3️⃣ Create a `.env` file with the following variables:
 
-npm run dev
----
-
-## 🛠 Environment variables
-
-Create a .env file:
-
+```env
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-RAZORPAY_KEY_ID=...
-RAZORPAY_KEY_SECRET=...
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+S3_BUCKET_NAME=...
+JWT_SECRET=...
+```
+
+### 4️⃣ Run the server
+
+```bash
+npm run dev
+```
+
+The server will start on `http://localhost:8080` by default.
+
+---
+
+## ⚙️ Tech Stack
+
+* Node.js
+* Express.js
+* MongoDB & Mongoose
+* AWS S3 (for user profile storage)
+* dotenv, cors, cookie-parser
+
 ---
 
 ## ✏️ Author
