@@ -70,30 +70,23 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  console.log("hitting");
-
   try {
     const email = req.body.email.toLowerCase().trim();
     const password = req.body.password;
-    console.log("email", email, password);
-
     if (!validator.isEmail(email)) {
       throw new Error("Invalid credentials!");
     }
 
     const user = await User.findOne({ email });
-    console.log(user);
 
     if (!user) {
       throw new Error("Invalid credentials!");
     }
 
     const isPasswordValid = await user.isValidPassword(password);
-    console.log(isPasswordValid);
 
     if (isPasswordValid) {
       const token = await user.getJWT();
-      console.log("response successful");
 
       const userObj = user.toObject();
       delete userObj.password;
@@ -107,7 +100,6 @@ router.post("/login", async (req, res) => {
       res.status(400).json({ error: "Invalid credentials!" });
     }
   } catch (error) {
-    console.log(error);
     res.status(400).json({ error: error.message });
   }
 });
@@ -129,4 +121,4 @@ router.post("/logout", userAuth, async (req, res) => {
   }
 });
 
-module.exports = { router };
+module.exports = router 

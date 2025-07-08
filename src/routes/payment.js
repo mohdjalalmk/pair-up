@@ -37,7 +37,6 @@ router.post("/payment/create-order", userAuth, async (req, res) => {
       keyId: process.env.RAZOR_PAY_KEY_ID,
     });
   } catch (err) {
-    console.error("Error creating Razorpay order:", err);
     return res.status(500).json({ error: "Failed to create order" });
   }
 });
@@ -90,7 +89,7 @@ router.post(
           });
         }
       } catch (err) {
-        console.error("Error handling payment capture:", err);
+        // console.error("Error handling payment capture:", err);
       }
     }
 
@@ -107,9 +106,8 @@ router.post(
           }
         );
 
-        console.warn(`Payment failed: ${paymentEntity.error_description}`);
       } catch (err) {
-        console.error("Error handling payment failure:", err);
+        // console.error("Error handling payment failure:", err);
       }
     }
 

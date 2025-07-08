@@ -76,4 +76,4 @@ router.post(
   }
 );
 
-module.exports = { router };
+module.exports = router;
