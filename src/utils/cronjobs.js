@@ -15,7 +15,6 @@ cron.schedule(
         $lt: end,
       },
     });
-    console.log("sending email");
 
     for (const user of newUsers) {
       try {
@@ -26,15 +25,9 @@ cron.schedule(
             user.firstName + " " + user.lastName
           },\n\n Explore pair up by sending interest requests`
         );
-        console.log("resp:", resp);
       } catch (error) {
-        console.log("error:", error);
       }
     }
-
-    console.log("new users", newUsers);
-
-    console.log("testing", new Date());
   },
   {
     timezone: "Asia/Kolkata",

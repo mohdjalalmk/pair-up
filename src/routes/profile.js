@@ -70,11 +70,9 @@ router.patch(
 
       res.json({ message: "Details updated successfully", data: updates });
     } catch (error) {
-      console.log(error);
-
       res.status(400).send("Invalid edit request: " + error.message);
     }
   }
 );
 
-module.exports = { router };
+module.exports = router 

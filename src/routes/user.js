@@ -5,16 +5,8 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const BlacklistedToken = require("../models/blacklistedToken");
 const { s3, DeleteObjectCommand } = require("../utils/s3Client");
-const BUCKET_NAME = "pairup-userprofile";
+const { USER_DETAILS } = require("../constants/constants");
 
-const USER_DETAILS = [
-  "firstName",
-  "lastName",
-  "age",
-  "gender",
-  "description",
-  "photoUrl",
-];
 const router = express.Router();
 
 router.get("/user/requests/received", userAuth, async (req, res) => {
@@ -103,14 +95,16 @@ router.delete("/user/delete", userAuth, async (req, res) => {
     const token = authHeader?.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const expiryDate = new Date(decoded.exp * 1000);
+
     //Blacklist token
     await BlacklistedToken.create({ token, expiresAt: expiryDate });
+    
     //Delete photo
     if (user?.photoUrl) {
       const existingKey = user?.photoUrl.split(".amazonaws.com/")[1];
       if (existingKey) {
         const deleteCommand = new DeleteObjectCommand({
-          Bucket: BUCKET_NAME,
+          Bucket: process.env.S3_PROFILE_BUCKET,
           Key: existingKey,
         });
 
@@ -125,4 +119,4 @@ router.delete("/user/delete", userAuth, async (req, res) => {
   }
 });
 
-module.exports = { router };
+module.exports = router;
